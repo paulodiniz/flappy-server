@@ -1,6 +1,5 @@
 defmodule GameServer do
   use GenServer
-  require IEx
 
   def start_link([]) do
     GenServer.start_link(__MODULE__, [], name: __MODULE__)
@@ -12,6 +11,10 @@ defmodule GameServer do
 
   def exit(player) do
     GenServer.cast(__MODULE__, {:exit, player})
+  end
+
+  def all() do
+    GenServer.call(__MODULE__, :all)
   end
 
   def update_score(player) do
@@ -32,6 +35,10 @@ defmodule GameServer do
         |> Enum.take(5)
 
     {:reply, top_players, players}
+  end
+
+  def handle_call(:all, _from, players) do
+    {:reply, players, players}
   end
 
   def handle_cast({:join, player}, players) do
