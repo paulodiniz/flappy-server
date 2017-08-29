@@ -1,3 +1,3 @@
 defmodule Player do
-  defstruct score: 0
+  defstruct [:name, :uid, score: 0]
 end

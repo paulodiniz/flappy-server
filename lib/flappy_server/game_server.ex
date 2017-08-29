@@ -5,12 +5,12 @@ defmodule GameServer do
     GenServer.start_link(__MODULE__, [], name: __MODULE__)
   end
 
-  def join(player) do
-    GenServer.cast(__MODULE__, {:join, player})
+  def join() do
+    GenServer.call(__MODULE__, :join)
   end
 
-  def exit(player) do
-    GenServer.cast(__MODULE__, {:exit, player})
+  def leave(player) do
+    GenServer.cast(__MODULE__, {:leave, player})
   end
 
   def all() do
@@ -41,12 +41,14 @@ defmodule GameServer do
     {:reply, players, players}
   end
 
-  def handle_cast({:join, player}, players) do
-    {:noreply, [player | players]}
+  def handle_call(:join, _from, players) do
+    player = %Player{name: FlappyServer.NameGenerator.build, uid: UUID.uuid1()}
+
+    {:reply, player, [player | players]}
   end
 
-  def handle_cast({:exit, player}, players) do
-    updated_players = Enum.reject players, fn(p) -> p == player end
+  def handle_cast({:leave, uid}, players) do
+    updated_players = Enum.reject players, fn(p) -> p.uid == uid end
     {:noreply, updated_players}
   end
 end
