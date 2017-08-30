@@ -1,5 +1,6 @@
 defmodule GameServer do
   use GenServer
+  require IEx
 
   def start_link([]) do
     GenServer.start_link(__MODULE__, [], name: __MODULE__)
@@ -9,23 +10,36 @@ defmodule GameServer do
     GenServer.call(__MODULE__, :join)
   end
 
-  def leave(player) do
-    GenServer.cast(__MODULE__, {:leave, player})
+  def leave(uid) do
+    GenServer.cast(__MODULE__, {:leave, uid})
   end
 
   def all() do
     GenServer.call(__MODULE__, :all)
   end
 
-  def update_score(player) do
+  def update_score(uid, new_score) do
+    GenServer.cast(__MODULE__, {:update_score, uid, new_score})
   end
 
   def top() do
     GenServer.call(__MODULE__, :top)
   end
 
-  def init(state) do
-    {:ok, state}
+  # Server callbacks
+
+  def init(_) do
+    {:ok, []}
+  end
+
+  def handle_call(:join, _from, players) do
+    player = %Player{name: FlappyServer.NameGenerator.build, uid: UUID.uuid1(), score: 0}
+
+    {:reply, {player.uid, player.name}, [player | players]}
+  end
+
+  def handle_call(:all, _from, players) do
+    {:reply, players, players}
   end
 
   def handle_call(:top, _from, players) do
@@ -37,18 +51,20 @@ defmodule GameServer do
     {:reply, top_players, players}
   end
 
-  def handle_call(:all, _from, players) do
-    {:reply, players, players}
-  end
-
-  def handle_call(:join, _from, players) do
-    player = %Player{name: FlappyServer.NameGenerator.build, uid: UUID.uuid1()}
-
-    {:reply, player, [player | players]}
-  end
-
   def handle_cast({:leave, uid}, players) do
     updated_players = Enum.reject players, fn(p) -> p.uid == uid end
     {:noreply, updated_players}
+  end
+
+  def handle_cast({:update_score, uid, new_score}, players) do
+    index = players |> Enum.find_index(fn(p) -> p.uid == uid end)
+
+    player = players
+    |> Enum.at(index)
+    |> Map.put(:score, new_score)
+
+    updated_players = players |> List.delete_at(index)
+
+    {:noreply, [player | updated_players] }
   end
 end
