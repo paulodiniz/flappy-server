@@ -14,7 +14,7 @@ defmodule GameServerTest do
   end
 
   test "leave player", %{server: _} do
-    {uid, name} = GameServer.join
+    {uid, _} = GameServer.join
     assert GameServer.leave(uid) == :ok
     assert GameServer.all() == []
   end
