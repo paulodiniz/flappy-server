@@ -34,7 +34,7 @@ defmodule GameServer do
   def handle_call(:join, _from, players) do
     player = %Player{name: FlappyServer.NameGenerator.build, uid: UUID.uuid1(), score: 0}
 
-    {:reply, {player.uid, player.name}, [player | players]}
+    {:reply, player, [player | players]}
   end
 
   def handle_call(:all, _from, players) do
