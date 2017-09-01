@@ -8,20 +8,20 @@ defmodule GameServerTest do
   end
 
   test "join player", %{server: _} do
-    {uid, name} = GameServer.join
+    player = GameServer.join
     players = GameServer.all
-    assert players == [%Player{uid: uid, name: name, score: 0}]
+    assert players == [player]
   end
 
   test "leave player", %{server: _} do
-    {uid, _} = GameServer.join
-    assert GameServer.leave(uid) == :ok
+    player = GameServer.join
+    assert GameServer.leave(player.uid) == :ok
     assert GameServer.all() == []
   end
 
   test "update score", %{server: _} do
-    {uid, name} = GameServer.join
-    GameServer.update_score(uid, 37)
-    assert GameServer.all == [%Player{uid: uid, name: name, score: 37}]
+    player = GameServer.join
+    GameServer.update_score(player.uid, 37)
+    assert GameServer.all == [%Player{uid: player.uid, name: player.name, score: 37}]
   end
 end
