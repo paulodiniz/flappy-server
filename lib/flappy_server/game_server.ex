@@ -25,6 +25,10 @@ defmodule GameServer do
     GenServer.call(__MODULE__, :top)
   end
 
+  def clear() do
+    GenServer.cast(__MODULE__, :clear)
+  end
+
   # Server callbacks
 
   def init(_) do
@@ -65,5 +69,9 @@ defmodule GameServer do
     updated_players = players |> List.delete_at(index)
 
     {:noreply, [player | updated_players] }
+  end
+
+  def handle_cast(:clear, players) do
+    {:noreply, []}
   end
 end
