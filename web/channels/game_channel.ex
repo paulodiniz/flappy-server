@@ -2,11 +2,25 @@ defmodule FlappyServer.GameChannel do
   use FlappyServer.Web, :channel
 
   def join("game:lobby", payload, socket) do
-    if authorized?(payload) do
-      {:ok, socket}
-    else
-      {:error, %{reason: "unauthorized"}}
+    {:ok, socket}
+  end
+
+  def handle_in("join", %{}, socket) do
+    {:ok, player} = GameServer.join()
+    {:reply, {:ok, %{name: player.name, uid: player.uid}}, socket}
+  end
+
+  def handle_in("top", %{}, socket) do
+    {:ok, top_players} = GameServer.top
+    filtered_top_players = List.map top_players, fn(player) ->
+      %{name: player.name, uid: player.uid}
     end
+    {:reply, {:ok, filtered_top_players}, socket}
+  end
+
+  def handle_in("update_score", %{"uid" => uid, "score" => score}, socket) do
+    :ok = GameServer.update_score(uid, score)
+    {:noreply, socket}
   end
 
   # Channels can be used in a request/response fashion
@@ -22,8 +36,4 @@ defmodule FlappyServer.GameChannel do
     {:noreply, socket}
   end
 
-  # Add authorization logic here as required.
-  defp authorized?(_payload) do
-    true
-  end
 end

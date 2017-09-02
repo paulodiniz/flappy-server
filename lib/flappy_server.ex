@@ -14,6 +14,7 @@ defmodule FlappyServer do
       supervisor(FlappyServer.Endpoint, []),
       # Start your own worker by calling: FlappyServer.Worker.start_link(arg1, arg2, arg3)
       # worker(FlappyServer.Worker, [arg1, arg2, arg3]),
+      supervisor(GameServer, []),
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html
