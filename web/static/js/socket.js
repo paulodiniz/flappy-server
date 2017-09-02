@@ -61,8 +61,6 @@ channel.join()
   .receive("ok", resp => { console.log("Joined the channel", resp) })
   .receive("error", resp => { console.log("Unable to join", resp) })
 
-// setInInterval(() => channel.push("join", {}), 500)
-
 // setInterval(() => {
 //     console.log("On interval")
 //     channel.push("top_players", {})
@@ -75,7 +73,7 @@ channel.on("top_players", payload => {
 
 channel.push("join_game", {})
 
-channel.on("join_game", payload => {
+channel.on("joined_game", payload => {
     console.log("Joined Game")
     console.log(payload)
 })
