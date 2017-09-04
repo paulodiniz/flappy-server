@@ -5,8 +5,8 @@ defmodule GameServer do
     GenServer.start_link(__MODULE__, [], name: __MODULE__)
   end
 
-  def join() do
-    GenServer.call(__MODULE__, :join)
+  def join(uid) do
+    GenServer.call(__MODULE__, {:join, uid})
   end
 
   def leave(uid) do
@@ -35,8 +35,8 @@ defmodule GameServer do
     {:ok, []}
   end
 
-  def handle_call(:join, _from, players) do
-    player = %Player{name: FlappyServer.NameGenerator.build, uid: UUID.uuid1(), score: 0}
+  def handle_call({:join, uid}, _from, players) do
+    player = %Player{name: FlappyServer.NameGenerator.build, uid: uid, score: 0}
 
     {:reply, player, [player | players]}
   end
